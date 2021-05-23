@@ -11,12 +11,14 @@ import { reducers, metaReducers } from './reducer';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FalconCoreModule } from '@falcon-ng/core';
 import { environment } from './environments/environment';
+import { MaterialModule } from './MaterialModule';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
+    MaterialModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

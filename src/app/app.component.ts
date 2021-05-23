@@ -6,27 +6,35 @@ import { Product_Form_Validation } from './action/admin-action';
 import { AdminProductState } from './reducer/admin-reducer';
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { AlignmentLayoutDirection, Appearance, BaseFormComponent, ComponentType, FxLayout, IComponentConfig, IMeta, InputTypes } from '@falcon-ng/core';
-import { Observable, of } from 'rxjs';
+import { of, Observable } from "rxjs";
+import { delay, map, tap } from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent extends BaseFormComponent<any> implements OnInit{
+export class AppComponent extends BaseFormComponent<any> implements OnInit {
   private adminProductState: AdminProductState = {} as AdminProductState;
-  constructor(private store: Store<AdminProductState>,fb: FormBuilder)   {
+  constructor(private store: Store<AdminProductState>, fb: FormBuilder) {
     super(fb);
     this.defineForm();
-  }
+  } 
 
   ngOnInit(): void {
-    this.form = this.createControls();
-    this.adminProductState.productDetailformValidStatus = this.form;
-    this.store.dispatch(Product_Form_Validation(this.adminProductState));
+    this.createControlAsyncTask()
+      .then(() => this.store.dispatch(Product_Form_Validation(this.adminProductState)));
   }
 
-protected defineForm(): void {
+  createControlAsyncTask() {
+    return new Promise((resolve, reject) => {
+      this.form = this.createControls();
+      this.adminProductState.productDetailformValidStatus = this.form;
+      resolve('done');
+    });
+  }
+
+  protected defineForm(): void {
     this.controlsConfig =
     {
       container: {
@@ -39,22 +47,22 @@ protected defineForm(): void {
           fxLayoutAlignHorizontal: AlignmentLayoutDirection.Start,
           fxLayoutAlignVertical: AlignmentLayoutDirection.Center,
           componentConfig: [
-          {
-            componentProperty: {
-              label: 'Title',
-              appearance: Appearance.Outline,
-              placeHolder: 'Active',
-              attrType: 'text',
-            },
-            validations: [
-              {
-                name: 'required',
-                validator: Validators.required,
-                message: 'Required Field'
-              }],
-            componentType: 0,
-            formControlName: 'title'
-          }]
+            {
+              componentProperty: {
+                label: 'Title',
+                appearance: Appearance.Outline,
+                placeHolder: 'Active',
+                attrType: 'text',
+              },
+              validations: [
+                {
+                  name: 'required',
+                  validator: Validators.required,
+                  message: 'Required Field'
+                }],
+              componentType: 0,
+              formControlName: 'title'
+            }]
         }]
       }
     };
